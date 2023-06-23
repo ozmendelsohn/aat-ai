@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "aab-ai"
+version = "0.1.0"
+description = ""
+authors = ["Oz Mendelsohn <oz.mendelsohn@gmail.com>"]
+readme = "README.md"
+packages = [{include = "aab_ai"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+panel = "^1.1.1"
+jupyterlab = "^4.0.2"
+numpy = "^1.25.0"
+pandas = "^2.0.2"
+plotly = "^5.15.0"
+langchain = "^0.0.209"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
