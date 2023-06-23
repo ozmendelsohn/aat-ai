@@ -1,4 +1,4 @@
-# aat-ai
+# eda-ai
 Here is a project of my that trying create a chat bot for EDA.
 
 I am imagning a chat that you can ask questions about your data and it will answer you.
