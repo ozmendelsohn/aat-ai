@@ -1,10 +1,11 @@
 [tool.poetry]
-name = "aab-ai"
+name = "edaai"
 version = "0.1.0"
 description = ""
 authors = ["Oz Mendelsohn <oz.mendelsohn@gmail.com>"]
 readme = "README.md"
-packages = [{include = "aab_ai"}]
+packages = [{include = "src"},
+            {include = "chat", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -14,6 +15,7 @@ numpy = "^1.25.0"
 pandas = "^2.0.2"
 plotly = "^5.15.0"
 langchain = "^0.0.209"
+openai = "^0.27.8"
 
 
 [build-system]

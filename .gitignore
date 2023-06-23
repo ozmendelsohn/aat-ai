@@ -1,1 +1,5 @@
 secret
+notebooks/.ipynb_checkpoints/*
+*.cpython-310.pyc
+*.json
+notebooks/00_live_testing.ipynb
