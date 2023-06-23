@@ -1,6 +1,9 @@
 import re
 
 class MarkdownParser:
+    """
+    Utility class for parsing markdown text and extracting code blocks.
+    """
     
     @classmethod
     def get_code_block(cls, markdown_text: str, language: str = None) -> str:

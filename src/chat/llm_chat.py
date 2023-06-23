@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union, Any, Callable
 
 import param
 import panel as pn
@@ -7,6 +7,8 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.callbacks.base import BaseCallbackHandler
 from prompts import BasePromptTemplateCreator
+from chat.chat_elements import TextCodeRow
+import re
 
 pn.extension(template="bootstrap")
 
@@ -25,7 +27,7 @@ class StreamHandler(BaseCallbackHandler):
         The attribute of the container where the AI's responses will be displayed.
 
     """
-    def __init__(self, container: pn.widgets.ChatBo, 
+    def __init__(self, container: pn.widgets.ChatBox, 
                  initial_text:str="", 
                  target_attr:str="value"):
         self.container = container
@@ -44,9 +46,8 @@ class StreamHandler(BaseCallbackHandler):
         self.text += token
         self.container.replace(-1, {"AI": [self.text]})
 
-# Define a class for handling conversations with any LLM
 class LLMConversation(param.Parameterized):
-        """
+    """
     A class for handling conversations with a language model.
 
     Parameters
@@ -57,35 +58,28 @@ class LLMConversation(param.Parameterized):
         The prompt template creator for the conversation.
     verbose : bool, optional
         If True, print verbose output.
+    end_of_response_callback : Union[Callable, List[Callable]], optional
+        A callback function or list of callback functions to run at the end of each response.
     """
-
-    # Initialize the conversation handler
     def __init__(self, 
-                 llm: BaseLLM, 
-                 prompt_template_creator: BasePromptTemplateCreator = None,
-                 verbose: bool = False,
-                 **params):
-        # Use the provided LLM
+                llm: BaseLLM, 
+                prompt_template_creator: BasePromptTemplateCreator = None,
+                verbose: bool = False,
+                end_of_response_callback: Union[Callable, List[Callable]] = None,
+                **params):
         self._llm = llm
-        # Set up a conversation chain, which manages the flow of conversation
-        # It uses a buffer memory to keep track of the conversation history
-        self._chain = ConversationChain(
-            memory=ConversationBufferMemory(), 
-            llm=self._llm,
-            verbose=verbose
-        )
+        self._chain = ConversationChain(memory=ConversationBufferMemory(), 
+                                        llm=self._llm,
+                                        verbose=verbose
+                                        )
+        # Set up the prompt template creator if one was provided
         if prompt_template_creator:
             self._chain.prompt = prompt_template_creator.get_prompt()
-        # Set up a loading spinner to display while the AI is generating a response
-        self._spinner = pn.indicators.LoadingSpinner(
-            value=True,
-            width=18,
-            height=18,
-        )
-        # Set up a chat box widget for user input and AI responses
+        self._spinner = pn.indicators.LoadingSpinner(value=True, width=18, height=18)
         self.chat_box = pn.widgets.ChatBox()
-        # Set a watch on the chat box's value attribute to call the _chat method whenever the user sends a message
         self.chat_box.param.watch(self._chat, "value")
+        self.end_of_response_callback = [self._code_row_callck]
+        self.end_of_response_callback += end_of_response_callback or []
 
     # Decorator to disable the chat box while the AI is thinking
     def _disable_inputs(func):
@@ -95,7 +89,6 @@ class LLMConversation(param.Parameterized):
                 await func(self, *args, **kwargs)  # Run the decorated function
             finally:
                 self.chat_box.disabled = False  # Enable the chat box when the function is done
-
         return inner
 
     # @LLMConversation._disable_inputs
@@ -108,20 +101,24 @@ class LLMConversation(param.Parameterized):
         event : Any
             The chat event.
         """
-        user_message = event.new[-1]  # Get the last message from the user
-        input = user_message.get("You")  # Extract the user's input from the message
+        user_message = event.new[-1]  
+        input = user_message.get("You")
         if input is None:
             return  # If there's no input (e.g., the message was from the AI), do nothing
         self.chat_box.append({"AI": self._spinner})  # Show the loading spinner while the AI is generating a response
-        # Attach the StreamHandler callback to the language model
+
         # We do this every time a message is received so that the StreamHandler starts with fresh text each time
         self._llm.callbacks = [StreamHandler(self.chat_box)]
-        # Generate a response from the AI
         await self._chain.apredict(input=input)
+
+        # Run the end-of-response callbacks
+        for callback in self.end_of_response_callback:
+            callback()
+
 
     # Method for displaying the chat box in a Panel application
     def view(self) -> pn.widgets.ChatBox:
-                """
+        """
         Return the chat box for display in a Panel application.
 
         Returns
@@ -130,6 +127,23 @@ class LLMConversation(param.Parameterized):
             The chat box.
         """
         return self.chat_box.servable()  # Make the chat box servable so that it can be displayed in a Panel app
+
+    def _code_row_callck(self):
+        """
+        Check id the last message from the AI is a containing a code and if so, replace it with a TextCodeRow.
+        """
+        last_message = self.chat_box.value[-1]
+        if not last_message.get("AI", False):
+            return # If the last message is not from the AI, do nothing
+
+        last_message_text = last_message["AI"][0]
+        # chech if the last message is a text:
+        if not isinstance(last_message_text, str):
+            return # If the last message is not a string, do nothing
+        
+        if re.search(r"```", last_message_text):
+            self.chat_box.replace(len(self.chat_box) -1,
+                                 {'AI': TextCodeRow(last_message_text)})
 
 
 
