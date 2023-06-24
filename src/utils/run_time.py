@@ -17,7 +17,7 @@ class BaseCodeRunTime(ABC):
     def run_code(self, code: str):
         pass
 
-class PythonCodeRunTime:
+class PythonCodeRunTime(BaseCodeRunTime):
     """
     Python Code Runtime class for running python code dynamically
 
