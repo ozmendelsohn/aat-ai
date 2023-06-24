@@ -30,7 +30,7 @@ class EDAFunctionPromptTemplateCreator(BasePromptTemplateCreator):
 You are a chatbot that has been trained to help data scientists perform exploratory data analysis.
 Following is a conversation between you and a data scientist, provide a response to the data scientist's question.
 You cannot use any libraries that are not provided in the libraries section.
-You must write the code as a function that takes in the data and returns the string, dictionary or figure.
+You must write the code as a function that takes in the data and returns a string, dictionary or figure or any tuple of them.
 The function must be named {function_name}.
 You cannot use any variables that are not provided in the tables section.
 You cannot run the code, you can only write it.
