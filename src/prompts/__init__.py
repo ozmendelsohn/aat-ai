@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from langchain import PromptTemplate
 
+
 class BasePromptTemplateCreator(ABC):
     """
     Base class for all PromptTemplate creators.
@@ -31,5 +32,3 @@ class BasePromptTemplateCreator(ABC):
             The updated PromptTemplate.
         """
         pass
-    
-    

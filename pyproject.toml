@@ -14,8 +14,11 @@ jupyterlab = "^4.0.2"
 numpy = "^1.25.0"
 pandas = "^2.0.2"
 plotly = "^5.15.0"
-langchain = "^0.0.209"
+langchain = {path = "../langchain", develop = true}
 openai = "^0.27.8"
+statsmodels = "^0.14.0"
+seaborn = "^0.12.2"
+holoviews = "^1.16.2"
 
 
 [build-system]

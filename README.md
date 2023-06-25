@@ -12,10 +12,10 @@ TODOs:
 
 - [x] Create a chat bot that can answer questions about the data
 - [x] Create a chat bot that can create plots
-- [ ] Add a way to get the text from the chat rows widgets
-- [ ] Add a description box for users to input a description for the graph
+- [x] Add a way to get the text from the chat rows widgets
+- [x] Add a description box for users to input a description for the graph
 - [ ] Add a voice to dictation feature and rewrite using the chat bot.
-- [ ] Add add the new information to the chat and to the AI
+- [x] Add add the new information to the chat and to the AI
 - [ ] Create a chat bot that can create tables and download them
 - [ ] Create a chat bot that can create new chats
 - [ ] Add a way to upload new data
