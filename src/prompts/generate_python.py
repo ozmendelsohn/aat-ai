@@ -1,5 +1,7 @@
 from typing import Optional
+
 from langchain import PromptTemplate
+
 from prompts import BasePromptTemplateCreator
 
 
@@ -37,13 +39,15 @@ You cannot run the code, you can only write it.
 When writing Python code you must use markdown notation, start with ```python and end with ```.
 You have access to the following libraries:
 {libraries}
-Answer with the following table variables: 
+Answer with the following table variables:
 {tables}
 Use the following history to help you answer the question:
 {history}
 Answer the following: {input}"""
 
-    def __init__(self, libraries: str, tables: str, function_name: str = "eda_function"):
+    def __init__(
+        self, libraries: str, tables: str, function_name: str = "eda_function"
+    ):
         """
         Parameters
         ----------
@@ -66,9 +70,13 @@ Answer the following: {input}"""
         PromptTemplate
             Newly created PromptTemplate.
         """
-        template = self.TEMPLATE.format(libraries=self.libraries, tables=self.tables,
-                                        function_name=self.function_name, history="{history}",
-                                        input="{input}")
+        template = self.TEMPLATE.format(
+            libraries=self.libraries,
+            tables=self.tables,
+            function_name=self.function_name,
+            history="{history}",
+            input="{input}",
+        )
         return PromptTemplate(input_variables=["history", "input"], template=template)
 
     def update_libraries(self, new_libraries: str) -> None:

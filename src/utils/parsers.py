@@ -1,12 +1,13 @@
 import re
 
+
 class MarkdownParser:
     """
     Utility class for parsing markdown text and extracting code blocks.
     """
-    
+
     @classmethod
-    def get_code_block(cls, markdown_text: str, language: str = None) -> str:
+    def get_code_block(cls, markdown_text: str, language: str = '') -> str:
         """
         Extract code of a specific language from a markdown string.
 
@@ -23,7 +24,7 @@ class MarkdownParser:
         str
             Extracted code. Returns an empty string if no code is found.
         """
-        if language is None:
+        if language is '':
             language = cls.get_language(markdown_text)
 
         pattern = f"```{language}(.*?)```"
@@ -49,17 +50,17 @@ class MarkdownParser:
         pattern = r"```(\w+)\n"
         match = re.search(pattern, markdown_text)
         return match.group(1) if match else ""
-    
+
     @classmethod
-    def get_result(cls, markdown_text:str) -> dict:
+    def get_result(cls, markdown_text: str) -> dict:
         """
         Returns the result of the code block in a markdown string as a dictionary.
-        
+
         Parameters
         ----------
         markdown_text : str
             Markdown text with code enclosed in ```language and ```.
-            
+
         Returns
         -------
         dict
@@ -67,4 +68,4 @@ class MarkdownParser:
         """
         code = cls.get_code_block(markdown_text)
         language = cls.get_language(markdown_text)
-        return {'code': code, 'language': language}
+        return {"code": code, "language": language}

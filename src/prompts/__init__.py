@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from langchain import PromptTemplate
 
 
@@ -9,6 +10,7 @@ class BasePromptTemplateCreator(ABC):
     This class outlines the structure for creating a PromptTemplate generator,
     including an abstract method for creating a PromptTemplate.
     """
+
     TEMPLATE = "Base template for all PromptTemplate creators."
 
     @abstractmethod

@@ -214,8 +214,8 @@ class PythonCodeBlock(BaseChatElement):
         The code run time object to run the code with.
     """
 
-    height_padding = 5
-    width_padding = 5
+    height_padding = 20
+    width_padding = 20
 
     def __init__(self, code: str, run_time: BaseCodeRunTime = None):
         super().__init__()

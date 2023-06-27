@@ -1,13 +1,15 @@
-from typing import List, Dict, Callable
-
 import ast
 import re
+from typing import Callable, Dict, List
+
 import param
+
 from run_time import BaseCodeRunTime
 
 
 class PythonValidatorError(Exception):
     """Exception raised when Python code validation fails."""
+
     pass
 
 
@@ -27,16 +29,18 @@ class PythonCodeRunTime(BaseCodeRunTime):
         A PythonValidator object to validate the code before running
     """
 
-    def __init__(self,
-                 imports: str,
-                 variables: Dict[str, any],
-                 function_name: str = 'eda_function',
-                 validator=None):
+    def __init__(
+        self,
+        imports: str,
+        variables: Dict[str, any],
+        function_name: str = "eda_function",
+        validator=None,
+    ):
         self.imports = imports
         self.variables = variables
         self.function_name = function_name
         self.validator = validator
-        self.namespace = {}
+        self.namespace: dict = {}
 
         # Execute the import statements
         exec(self.imports, self.namespace)
@@ -93,7 +97,8 @@ class PythonCodeRunTime(BaseCodeRunTime):
         output = function(**self.variables)
         if output is None:
             raise PythonValidatorError(
-                "The code does not return any output, please return an output.")
+                "The code does not return any output, please return an output."
+            )
         return output
 
 
@@ -113,17 +118,19 @@ class PythonValidator:
         Whether to check for usage of exec or eval. Default is True.
     """
 
-    def __init__(self,
-                 check_imports: bool = True,
-                 check_links: bool = True,
-                 check_save_funcs: bool = True,
-                 check_exec_eval: bool = True):
+    def __init__(
+        self,
+        check_imports: bool = True,
+        check_links: bool = True,
+        check_save_funcs: bool = True,
+        check_exec_eval: bool = True,
+    ):
         self.check_imports = check_imports
         self.check_links = check_links
         self.check_save_funcs = check_save_funcs
         self.check_exec_eval = check_exec_eval
         # Functions that might be used to save data
-        self.save_funcs = ['open', 'write', 'save', 'dump']
+        self.save_funcs = ["open", "write", "save", "dump"]
 
     def validate(self, code: str):
         """
@@ -140,23 +147,36 @@ class PythonValidator:
             If any of the validation checks fail.
         """
         if self.check_imports:
-            if any(isinstance(node, ast.Import) or isinstance(node, ast.ImportFrom) for node in ast.walk(ast.parse(code))):
-                raise PythonValidatorError("The code contains import statements, which are not allowed. \
-                                           Only use the libraries provided in the prompt and do not import any other libraries.")
+            if any(
+                isinstance(node, ast.Import) or isinstance(node, ast.ImportFrom)
+                for node in ast.walk(ast.parse(code))
+            ):
+                raise PythonValidatorError(
+                    "The code contains import statements, which are not allowed. \
+                        Only use the libraries provided in the prompt and do not import any other libraries."
+                )
 
         if self.check_links:
-            if re.search(r'https?://\S+|www\.\S+', code):
-                raise PythonValidatorError("The code contains links, which are not allowed. \
-                                            Please remove the links from the code or change the PythonValidator configuration.")
+            if re.search(r"https?://\S+|www\.\S+", code):
+                raise PythonValidatorError(
+                    "The code contains links, which are not allowed. \
+                        Please remove the links from the code or change the PythonValidator configuration."
+                )
 
         if self.check_save_funcs:
             if any(func in code for func in self.save_funcs):
-                raise PythonValidatorError("The code contains functions that might be used to save data, which are not allowed.\
-                                            Please remove or rename the functions in code to something other than {}.".format(self.save_funcs))
+                raise PythonValidatorError(
+                    "The code contains functions that might be used to save data, which are not allowed.\
+                        Please remove or rename the functions in code to something other than {}.".format(
+                        self.save_funcs
+                    )
+                )
 
         if self.check_exec_eval:
-            if 'exec' in code or 'eval' in code:
-                raise PythonValidatorError("The code contains usage of exec or eval, which are not allowed.\
-                                            Please remove the usage of exec or eval from the code.")
+            if "exec" in code or "eval" in code:
+                raise PythonValidatorError(
+                    "The code contains usage of exec or eval, which are not allowed.\
+                                            Please remove the usage of exec or eval from the code."
+                )
 
         return True

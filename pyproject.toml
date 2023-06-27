@@ -14,12 +14,17 @@ jupyterlab = "^4.0.2"
 numpy = "^1.25.0"
 pandas = "^2.0.2"
 plotly = "^5.15.0"
-langchain = {path = "../langchain", develop = true}
 openai = "^0.27.8"
 statsmodels = "^0.14.0"
 seaborn = "^0.12.2"
 holoviews = "^1.16.2"
+langchain = "^0.0.216"
+gradio = "^3.35.2"
 
+
+[tool.poetry.group.test.dependencies]
+autopep8 = "^2.0.2"
+pre-commit = "^3.3.3"
 
 [build-system]
 requires = ["poetry-core"]
